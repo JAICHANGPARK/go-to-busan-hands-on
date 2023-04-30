@@ -12,6 +12,7 @@ dependencies:
   http: any
   freezed_annotation: any
   flutter_riverpod: ^2.3.6
+  uuid: any
 
 dev_dependencies:
   flutter_test:
@@ -20,6 +21,7 @@ dev_dependencies:
   flutter_lints: ^2.0.1
   build_runner: any
   freezed: any
+
 
 flutter:
   uses-material-design: true
