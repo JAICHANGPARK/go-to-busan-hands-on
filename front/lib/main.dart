@@ -43,16 +43,17 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: <Widget>[
           CalendarDatePicker(
-              initialDate: DateTime.now(),
-              firstDate: DateTime(2022),
-              lastDate: DateTime.now(),
-              currentDate: _selectedDateTime,
-              onDateChanged: (d) {
-                setState(() {
-                  _selectedDateTime = d;
-                });
-              }),
-          Divider(),
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2022),
+            lastDate: DateTime.now(),
+            currentDate: _selectedDateTime,
+            onDateChanged: (d) {
+              setState(() {
+                _selectedDateTime = d;
+              });
+            },
+          ),
+          const Divider(),
           Expanded(
             child: ListView(),
           ),
