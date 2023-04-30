@@ -125,8 +125,42 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       itemCount: diaryItems.length,
                       itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(diaryItems[index].note ?? ""),
+                        return Dismissible(
+                          direction: DismissDirection.endToStart,
+                          key: Key(diaryItems[index].uuid ?? index.toString()),
+                          onDismissed: (d) {
+                            print(d);
+                          },
+                          confirmDismiss: (b) async {
+                            print("confirmDismiss");
+                            await showAdaptiveDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog.adaptive(
+                                    title: Text("삭제할까요?"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text("취소"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text("진행"),
+                                      )
+                                    ],
+                                  );
+                                });
+                            return false;
+                          },
+                          child: ListTile(
+                            title: Text(diaryItems[index].note ?? ""),
+                            subtitle:
+                                Text(diaryItems[index].dt.toString() ?? ""),
+                          ),
                         );
                       },
                     ),
