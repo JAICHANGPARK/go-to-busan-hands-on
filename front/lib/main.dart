@@ -59,7 +59,52 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet(
+              isDismissible: false,
+              enableDrag: false,
+              context: context,
+              builder: (context) {
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        "다이어리 작성",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 24),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          expands: true,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            border: OutlineInputBorder(),
+                          ),
+                          textAlignVertical: TextAlignVertical.top,
+                          maxLines: null,
+                          maxLength: 140,
+                          keyboardType: TextInputType.multiline,
+                        ),
+                      ),
+                      ButtonBar(
+                        children: [
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("취소")),
+                          ElevatedButton(onPressed: () {}, child: Text("저장"))
+                        ],
+                      ),
+                      SizedBox(
+                        height: 24,
+                      )
+                    ],
+                  ),
+                );
+              });
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
