@@ -126,7 +126,6 @@ func main() {
 			gologger.Info().Msgf("Timestamp : " + fmt.Sprintf("%v", result.Timestamp))
 			fmt.Println("===================================================================")
 			tmps = append(tmps, result)
-
 		}
 		return c.JSON(ResponseModel{200, strconv.Itoa(len(tmps)), tmps})
 
