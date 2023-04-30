@@ -53,7 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     final resp = await http.get(uri);
     print(resp.body);
-    final items = ResponseModel.fromJson(jsonDecode(resp.body));
+    final items =
+        ResponseModel.fromJson(jsonDecode(utf8.decode(resp.bodyBytes)));
     setState(() {
       diaryItems.clear();
       diaryItems.addAll(items.items ?? []);
@@ -76,21 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
             onPressed: () async {
-              // final resp = await http.get(
-              //   Uri.parse(
-              //     url + "/diary",
-              //   ),
-              // );
-              final uri = Uri.http(
-                '127.0.0.1:3000',
-                '/diary',
-                {
-                  // 'search': "2023-04-30",
-                  'search': _selectedDateTime.toString()
-                },
-              );
-              final resp = await http.get(uri);
-              print(resp.body);
+              fetchDiary();
             },
             icon: Icon(Icons.refresh),
           ),
@@ -125,15 +112,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       itemCount: diaryItems.length,
                       itemBuilder: (context, index) {
+                        print(diaryItems.length);
                         return Dismissible(
                           direction: DismissDirection.endToStart,
-                          key: Key(diaryItems[index].uuid ?? index.toString()),
+                          key: UniqueKey(),
                           onDismissed: (d) {
                             print(d);
+                            setState(() {});
                           },
                           confirmDismiss: (b) async {
                             print("confirmDismiss");
-                            await showAdaptiveDialog(
+                            final result = await showAdaptiveDialog(
                                 context: context,
                                 builder: (context) {
                                   return AlertDialog.adaptive(
@@ -141,21 +130,33 @@ class _MyHomePageState extends State<MyHomePage> {
                                     actions: [
                                       TextButton(
                                         onPressed: () {
-                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop(false);
                                         },
                                         child: Text("취소"),
                                       ),
                                       TextButton(
                                         onPressed: () {
-                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop(true);
                                         },
                                         child: Text("진행"),
                                       )
                                     ],
                                   );
                                 });
-                            return false;
+
+                            return result;
                           },
+                          background: Container(
+                            color: Colors.red,
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                           child: ListTile(
                             title: Text(diaryItems[index].note ?? ""),
                             subtitle:
