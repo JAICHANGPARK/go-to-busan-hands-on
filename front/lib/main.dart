@@ -64,6 +64,17 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  deleteDiary(String uuid) async {
+    final uri = Uri.http(
+      '10.0.2.2:3000',
+      '/diary',
+      {
+        'uuid': uuid,
+      },
+    );
+    final resp = await http.delete(uri);
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -116,54 +127,85 @@ class _MyHomePageState extends State<MyHomePage> {
                       itemCount: diaryItems.length,
                       itemBuilder: (context, index) {
                         print(diaryItems.length);
-                        return Dismissible(
-                          direction: DismissDirection.endToStart,
-                          key: UniqueKey(),
-                          onDismissed: (d) {
-                            print(d);
-                            setState(() {});
-                          },
-                          confirmDismiss: (b) async {
-                            print("confirmDismiss");
-                            final result = await showAdaptiveDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog.adaptive(
-                                  title: const Text("삭제할까요?"),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(false);
-                                      },
-                                      child: const Text("취소"),
+                        return GestureDetector(
+                          onTap: () {
+                            textEditingController.text =
+                                diaryItems[index].note ?? "";
+                            showAdaptiveDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text("수정하기"),
+                                    content: TextField(
+                                      controller: textEditingController,
                                     ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(true);
-                                      },
-                                      child: const Text("진행"),
-                                    )
-                                  ],
-                                );
-                              },
-                            );
-                            return result;
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+
+                                        },
+                                        child: Text("저장"),
+                                      ),
+                                    ],
+                                  );
+                                });
                           },
-                          background: Container(
-                            color: Colors.red,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: const Align(
-                              alignment: Alignment.centerRight,
-                              child: Icon(
-                                Icons.delete,
-                                color: Colors.white,
+                          child: Dismissible(
+                            direction: DismissDirection.endToStart,
+                            key: UniqueKey(),
+                            onDismissed: (d) {
+                              print(d);
+                              if (d == DismissDirection.endToStart) {
+                                deleteDiary(diaryItems[index].uuid ?? "");
+                              }
+                              setState(() {});
+                            },
+                            confirmDismiss: (b) async {
+                              print("confirmDismiss");
+                              final result = await showAdaptiveDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog.adaptive(
+                                    title: const Text("삭제할까요?"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(false);
+                                        },
+                                        child: const Text("취소"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(true);
+                                        },
+                                        child: const Text("진행"),
+                                      )
+                                    ],
+                                  );
+                                },
+                              );
+                              return result;
+                            },
+                            background: Container(
+                              color: Colors.red,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: const Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                          ),
-                          child: ListTile(
-                            title: Text(diaryItems[index].note ?? ""),
-                            subtitle:
-                                Text(diaryItems[index].dt.toString() ?? ""),
+                            child: ListTile(
+                              title: Text(
+                                diaryItems[index].note ?? "",
+                              ),
+                              subtitle: Text(
+                                diaryItems[index].dt.toString(),
+                              ),
+                            ),
                           ),
                         );
                       },
@@ -186,7 +228,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       const Text(
                         "다이어리 작성",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                        ),
                       ),
                       Expanded(
                         child: TextField(
