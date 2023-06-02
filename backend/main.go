@@ -80,12 +80,18 @@ func insertDiaryItem(uuid string, note string, dt string, timestamp int) {
 	gologger.Info().Msgf("데이터 삽입 완료!")
 }
 
+func deleteDiartItem(uuid string) {
+	query := `DELETE FROM diary WHERE uuid=?;`
+	if _, err := myDB.Exec(query, uuid); err != nil {
+		checkErr(err)
+	}
+}
+
 func main() {
 	db, err := sql.Open("sqlite3", "mydb.db")
 	checkErr(err)
 	defer db.Close()
 	myDB = db
-
 	createTestTable()
 	// insertTestData("hello", "29", "서울시")
 
@@ -99,12 +105,12 @@ func main() {
 		}
 		log.Println(item.Id)
 		log.Println(item.Note)
-		// insertTestData(item.Id, "29", "서울시")
 		insertDiaryItem(item.Uuid, item.Note, item.Dt, item.Timestamp)
-		// return c.SendString("Completed")
 		return c.JSON(item)
 	})
+
 	app.Get("/diary", func(c *fiber.Ctx) error {
+
 		search := c.Query("search")
 		log.Println(search)
 		rows, err := myDB.Query("SELECT * FROM diary WHERE Date(dt) = Date(?)", search)
@@ -129,6 +135,13 @@ func main() {
 		}
 		return c.JSON(ResponseModel{200, strconv.Itoa(len(tmps)), tmps})
 
+	})
+
+	app.Delete("/diary", func(c *fiber.Ctx) error {
+		uuid := c.Query("uuid")
+		log.Println(uuid)
+		deleteDiartItem(uuid)
+		return c.JSON("200")
 	})
 
 	app.Get("/", func(c *fiber.Ctx) error {
