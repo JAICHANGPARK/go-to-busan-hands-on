@@ -20,9 +20,10 @@ class ResponseModel {
 
   factory ResponseModel.fromJson(Map<String, dynamic> json) {
     return ResponseModel(
-        code: json['code'],
-        message: json['message'],
-        items: List.from(json['items']).map((e) => Items.fromJson(e)).toList());
+      code: json['code'],
+      message: json['message'],
+      items: List.from(json['items']).map((e) => Items.fromJson(e)).toList(),
+    );
   }
 }
 
