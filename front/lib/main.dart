@@ -5,7 +5,8 @@ import 'package:go_to_busan_handson/model.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
-String url = "http://127.0.0.1:3000";
+String url = "http://10.0.2.2:3000";
+//10.0.2.2
 
 void main() {
   runApp(const MyApp());
@@ -44,17 +45,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   fetchDiary() async {
     final uri = Uri.http(
-      '127.0.0.1:3000',
+      '10.0.2.2:3000',
       '/diary',
       {
-        // 'search': "2023-04-30",
-        'search': _selectedDateTime.toString()
+        'search': _selectedDateTime.toString(),
       },
     );
     final resp = await http.get(uri);
     print(resp.body);
-    final items =
-        ResponseModel.fromJson(jsonDecode(utf8.decode(resp.bodyBytes)));
+    final items = ResponseModel.fromJson(
+      jsonDecode(
+        utf8.decode(resp.bodyBytes),
+      ),
+    );
     setState(() {
       diaryItems.clear();
       diaryItems.addAll(items.items ?? []);
@@ -79,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () async {
               fetchDiary();
             },
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
           ),
         ],
       ),
@@ -103,12 +106,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 await fetchDiary();
               },
               child: diaryItems.isEmpty
-                  ? Center(
+                  ? const Center(
                       child: Text("기록이 없습니다."),
                     )
                   : ListView.separated(
                       separatorBuilder: (context, _) {
-                        return Divider();
+                        return const Divider();
                       },
                       itemCount: diaryItems.length,
                       itemBuilder: (context, index) {
@@ -123,33 +126,33 @@ class _MyHomePageState extends State<MyHomePage> {
                           confirmDismiss: (b) async {
                             print("confirmDismiss");
                             final result = await showAdaptiveDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog.adaptive(
-                                    title: Text("삭제할까요?"),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop(false);
-                                        },
-                                        child: Text("취소"),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop(true);
-                                        },
-                                        child: Text("진행"),
-                                      )
-                                    ],
-                                  );
-                                });
-
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog.adaptive(
+                                  title: const Text("삭제할까요?"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop(false);
+                                      },
+                                      child: const Text("취소"),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop(true);
+                                      },
+                                      child: const Text("진행"),
+                                    )
+                                  ],
+                                );
+                              },
+                            );
                             return result;
                           },
                           background: Container(
                             color: Colors.red,
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: Align(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: const Align(
                               alignment: Alignment.centerRight,
                               child: Icon(
                                 Icons.delete,
@@ -189,7 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: TextField(
                           controller: textEditingController,
                           expands: true,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             isDense: true,
                             border: OutlineInputBorder(),
                           ),
