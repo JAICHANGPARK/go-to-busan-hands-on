@@ -11,12 +11,6 @@ import (
 	"github.com/projectdiscovery/gologger"
 )
 
-type Response struct {
-	Code     int        `json:"code"`
-	Message  string     `json:"message"`
-	TestData []TestData `json:"items"`
-}
-
 type ResponseModel struct {
 	Code    int     `json:"code"`
 	Message string  `json:"message"`
@@ -32,16 +26,15 @@ type Diary struct {
 	Timestamp int    `json:"timestamp"`
 }
 
-type TestData struct {
-	Id      int
-	Name    string
-	Age     string
-	Address string
-}
-
 var (
 	myDB *sql.DB
 )
+
+func checkErr(err error) {
+	if err != nil {
+		gologger.Error().Msgf(err.Error())
+	}
+}
 
 func createTestTable() {
 	query := `
@@ -56,20 +49,6 @@ func createTestTable() {
 	if _, err := myDB.Exec(query); err != nil {
 		checkErr(err)
 	}
-}
-
-func checkErr(err error) {
-	if err != nil {
-		gologger.Error().Msgf(err.Error())
-	}
-}
-
-func insertTestData(uuid string, note string, timestamp string) {
-	query := `INSERT INTO diary VALUES(NULL,?,?,?)`
-	if _, err := myDB.Exec(query, uuid, note, timestamp); err != nil {
-		checkErr(err)
-	}
-	gologger.Info().Msgf("데이터 삽입 완료!")
 }
 
 func insertDiaryItem(uuid string, note string, dt string, timestamp int) {
@@ -103,8 +82,6 @@ func main() {
 		if err := c.BodyParser(item); err != nil {
 			return err
 		}
-		log.Println(item.Id)
-		log.Println(item.Note)
 		insertDiaryItem(item.Uuid, item.Note, item.Dt, item.Timestamp)
 		return c.JSON(item)
 	})
@@ -115,8 +92,6 @@ func main() {
 		log.Println(search)
 		rows, err := myDB.Query("SELECT * FROM diary WHERE Date(dt) = Date(?)", search)
 
-		// rows, err := stm.Query(search)
-		// rows, err := myDB.Query("SELECT * FROM diary WHERE Date(dt) = Date(?)")
 		if err != nil {
 			log.Panicln(err)
 		}
